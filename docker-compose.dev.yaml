@@ -1,0 +1,35 @@
+services:
+  web:
+    image: node:18
+    ports:
+      - "3001:8080"
+    volumes:
+      - ./:/app
+      - open-webui:/app/backend/data
+    working_dir: /app
+    environment:
+      - NODE_ENV=development
+    command: >
+      bash -c "
+        apt-get update && 
+        apt-get install -y python3 python3-pip python3-venv &&
+        npm install &&
+        npm run dev
+      "
+
+  backend:
+    image: python:3.10
+    volumes:
+      - ./:/app
+      - open-webui:/app/backend/data
+    working_dir: /app/backend
+    environment:
+      - PYTHONPATH=/app/backend
+    command: >
+      bash -c "
+        pip install -r requirements.txt &&
+        python main.py
+      "
+
+volumes:
+  open-webui:
